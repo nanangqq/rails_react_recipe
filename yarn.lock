@@ -5986,6 +5986,18 @@ react-is@^16.6.0, react-is@^16.7.0, react-is@^16.8.1:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.12.0.tgz#2cc0fe0fba742d97fd527c42a13bec4eeb06241c"
   integrity sha512-rPCkf/mWBtKc97aLL9/txD8DZdemK0vkA3JMLShjlJB3Pj3s+lpf1KaBzMfQrAmhMQB0n1cU/SUGgKKBCe837Q==
 
+react-load-script@^0.0.6:
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/react-load-script/-/react-load-script-0.0.6.tgz#db6851236aaa25bb622677a2eb51dad4f8d2c258"
+  integrity sha512-aRGxDGP9VoLxcsaYvKWIW+LRrMOzz2eEcubTS4NvQPPugjk2VvMhow0wWTkSl7RxookomD1MwcP4l5UStg5ShQ==
+
+react-naver-map-fork@0.0.27:
+  version "0.0.27"
+  resolved "https://registry.yarnpkg.com/react-naver-map-fork/-/react-naver-map-fork-0.0.27.tgz#1dea0d9869fef1b9170a83fcd7f06d93cc6a7dda"
+  integrity sha512-M4IuHYpoCmrgVRIK51+En9M8gRDMINjPXVNMQKfHLRlV2XzwCbZRd1+FHugy7XI3s0tXRaHxFtIJwvlJ40w5WA==
+  dependencies:
+    react-load-script "^0.0.6"
+
 react-router-dom@^5.1.2:
   version "5.1.2"
   resolved "https://registry.yarnpkg.com/react-router-dom/-/react-router-dom-5.1.2.tgz#06701b834352f44d37fbb6311f870f84c76b9c18"
