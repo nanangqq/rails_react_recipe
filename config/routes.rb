@@ -1,5 +1,10 @@
 Rails.application.routes.draw do
   namespace :api do
+    namespace :v2 do
+      post 'showpols/index'
+    end
+  end
+  namespace :api do
     namespace :pols do
       get 'polstest/index'
       post 'polstest/create'

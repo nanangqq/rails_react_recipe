@@ -6,6 +6,7 @@ import Recipe from "../components/Recipe";
 import NewRecipe from "../components/NewRecipe";
 import Pols_test from "../components/Pols_test";
 import NewPol from "../components/NewPol";
+import SearchPol from "../components/SearchPol";
 
 export default (
     <Router>
@@ -16,6 +17,7 @@ export default (
             <Route path='/recipe' exact component={NewRecipe} />
             <Route path='/polstest' exact component={Pols_test} />
             <Route path='/pol' exact component={NewPol} />
+            <Route path='/polshow' exact component={SearchPol} />
         </Switch>
     </Router>
 );

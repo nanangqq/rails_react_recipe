@@ -24,6 +24,14 @@ export default () => (
         >
           Polygons
         </Link>
+        &nbsp;
+        <Link
+          to="/polshow"
+          className="btn btn-lg custom-button"
+          role="button"
+        >
+          ShowPloygons
+        </Link>
       </div>
     </div>
   </div>

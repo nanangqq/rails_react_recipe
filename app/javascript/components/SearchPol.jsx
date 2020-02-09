@@ -7,9 +7,8 @@ class NewPol extends React.Component {
         super(props);
         this.state = {
             pol: "",
-            name: "",
-            table: "",
             markers:[],
+            polygons:[],
             paths:[[]]
         };
 
@@ -30,18 +29,18 @@ class NewPol extends React.Component {
 
     onSubmit(event) {
         event.preventDefault();
-        const url = "/api/pols/polstest/create";
-        const { pol, name, table } = this.state;
-        console.log(pol);
+        const url = "/api/v2/showpols/index";
+        const { pol } = this.state;
+        // console.log(pol.split(','));
 
-        if (pol.length == 0 || name.length == 0 || table.length == 0)
+        if (pol.length == 0)
             return;
 
         const body = {
-            pol: pol.replace(/\n/g, ""),
-            name,
-            table
+            pol: pol // replace(/\n/g, "")
+            // pol: pol.replace(/\n/g, "").split(','),
         };
+        console.log(body);
 
         const token = document.querySelector('meta[name="csrf-token"]').content;
         console.log(token);
@@ -58,13 +57,42 @@ class NewPol extends React.Component {
             }
             throw new Error("Network response was not ok.");
         }).then(response => {
-            this.props.history.push(`/pol`);
+            this.props.history.push(`/polshow`);
             console.log(response);
+
+            const tmPoList = [];
+            response.forEach((el)=>{
+                // console.log(el.pol);
+                if (el.pol.indexOf('POLYGON')!==-1) {
+                    const tmPaths = [];
+                    el.pol.replace('POLYGON','').split('),(').forEach((path)=>{
+                        const tmPath = [];
+                        path.replace(/\(/g,'').replace(/\)/g,'').split(',').forEach((point)=>{
+                            // console.log(point);
+                            const [lng, lat] = point.split(' ');
+                            tmPath.push({lat:lat, lng:lng});
+                        });
+                        tmPaths.push(tmPath);
+                    });
+                    tmPoList.push(
+                        <Polygon 
+                            key = {el.pnu}
+                            paths={tmPaths} 
+                            fillColor={'#ff0000'}
+                            fillOpacity={0.6}
+                            strokeColor={'#ff0000'}
+                            strokeOpacity={0.6}
+                            strokeWeight={2}
+                        />
+                    );
+                }
+            });
+            this.setState({polygons: tmPoList});
+
         }).catch(error => {
             console.log(error.message);
         });
     }
-
  
     createPolygon(e) {
         // console.log(e.latlng.x, e.latlng.y);
@@ -116,70 +144,35 @@ class NewPol extends React.Component {
     render() {
         return (
             <div className="container mt-5">
-                <NaverMap
-                    clientId='uu18yh1r2p'
-                    ncp // 네이버 클라우드 플랫폼 사용여부
-                    style={{margin:'0 auto',width:'100%', height:'900px'}}
-                    initialPosition={{lat:37.5063796431181, lng:127.06221589110937}}
-                    initialZoom={16}
-                    onMapClick={(e) => {this.createPolygon(e)}}
-                    jijuk={true}
-                >
-                    {this.state.markers}
-                    <Polygon 
-                        paths={this.state.paths} 
-                        fillColor={'#ff0000'}
-                        fillOpacity={0.6}
-                        strokeColor={'#ff0000'}
-                        strokeOpacity={0.6}
-                        strokeWeight={2}
-                    />
-                </NaverMap>
-
-              <div className="row">
-              <div className="col-sm-12 col-lg-6 offset-lg-3">
-                <form onSubmit={this.onSubmit}>
-                  <div className="form-group">
-                    <label htmlFor="zoneName">table</label>
-                    <input
-                      type="text"
-                      name="table"
-                      id="tableName"
-                      className="form-control"
-                      required
-                      onChange={this.onChange}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="zoneName">name</label>
-                    <input
-                      type="text"
-                      name="name"
-                      id="zoneName"
-                      className="form-control"
-                      required
-                      onChange={this.onChange}
-                    />
-                  </div>
-                  <label htmlFor="pol">polygon</label>
-                  <textarea
-                    className="form-control"
-                    id="pol"
-                    name="pol"
-                    rows="5"
-                    required
-                    onChange={this.onChange}
-                  />
-                  <button type="submit" className="btn custom-button mt-3">
-                    save polygon
-                  </button>
-                  <Link to="/polstest" className="btn btn-link mt-3">
-                    Back
-                  </Link>
-                </form>
-              </div>
+                <div className="row">
+                    <div className="col-sm-12 col-lg-6 offset-lg-3">
+                        <form onSubmit={this.onSubmit}>
+                            <label htmlFor="pol">pnu 입력(여러 개일 경우 ',' 로 구분)</label>
+                                <textarea
+                                    className="form-control"
+                                    id="pol"
+                                    name="pol"
+                                    rows="5"
+                                    required
+                                    onChange={this.onChange}
+                                />
+                            <button type="submit" className="btn custom-button mt-3">show polygon</button>
+                            <Link to="/" className="btn btn-link mt-3">Back</Link>
+                        </form>
+                    </div>
+                    <NaverMap
+                        clientId='uu18yh1r2p'
+                        ncp // 네이버 클라우드 플랫폼 사용여부
+                        style={{margin:'0 auto',width:'100%', height:'900px'}}
+                        initialPosition={{lat:37.5063796431181, lng:127.06221589110937}}
+                        initialZoom={16}
+                        // onMapClick={(e) => {this.createPolygon(e)}}
+                        jijuk={true}
+                    >
+                        {this.state.polygons}
+                    </NaverMap>
+                </div>
             </div>
-          </div>
         );
     }
 }
