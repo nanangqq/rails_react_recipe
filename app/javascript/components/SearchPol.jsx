@@ -9,7 +9,11 @@ class NewPol extends React.Component {
             pol: "",
             markers:[],
             polygons:[],
-            paths:[[]]
+            paths:[[]],
+            mapCenterPoint: {lat:37.5063796431181, lng:127.06221589110937},
+            map:'',
+            naverMap:{},
+            naver:{}
         };
 
         this.onChange = this.onChange.bind(this);
@@ -40,10 +44,10 @@ class NewPol extends React.Component {
             pol: pol // replace(/\n/g, "")
             // pol: pol.replace(/\n/g, "").split(','),
         };
-        console.log(body);
+        // console.log(body);
 
         const token = document.querySelector('meta[name="csrf-token"]').content;
-        console.log(token);
+        // console.log(token);
         fetch(url, {
             method: "POST",
             headers: {
@@ -58,9 +62,11 @@ class NewPol extends React.Component {
             throw new Error("Network response was not ok.");
         }).then(response => {
             this.props.history.push(`/polshow`);
-            console.log(response);
+            // console.log(response);
 
             const tmPoList = [];
+            const latArr = [];
+            const lngArr = [];
             response.forEach((el)=>{
                 // console.log(el.pol);
                 if (el.pol.indexOf('POLYGON')!==-1) {
@@ -71,6 +77,8 @@ class NewPol extends React.Component {
                             // console.log(point);
                             const [lng, lat] = point.split(' ');
                             tmPath.push({lat:lat, lng:lng});
+                            latArr.push(Number(lat));
+                            lngArr.push(Number(lng));
                         });
                         tmPaths.push(tmPath);
                     });
@@ -88,7 +96,23 @@ class NewPol extends React.Component {
                 }
             });
             this.setState({polygons: tmPoList});
-
+            // this.setState({map:
+            //     <NaverMap
+            //         clientId='uu18yh1r2p'
+            //         ncp // 네이버 클라우드 플랫폼 사용여부
+            //         style={{margin:'0 auto',width:'100%', height:'900px'}}
+            //         initialPosition={{lat: latArr.reduce((p,c)=>p+c)/latArr.length, lng: lngArr.map((p,c)=>p+c)/lngArr.length }}
+            //         initialZoom={16}
+            //         // onMapClick={(e) => {this.createPolygon(e)}}
+            //         jijuk={true}
+            //     >
+            //         {tmPoList}
+            //     </NaverMap>
+            // });
+            // console.log(this.state.naverMap);
+            let newCen = new naver.maps.LatLng(latArr.reduce((p,c)=>p+c)/latArr.length, lngArr.reduce((p,c)=>p+c)/lngArr.length);
+            this.state.naverMap.setCenter(newCen);
+            // console.log({lat: latArr.reduce((p,c)=>p+c)/latArr.length, lng: lngArr.reduce((p,c)=>p+c)/lngArr.length });
         }).catch(error => {
             console.log(error.message);
         });
@@ -141,6 +165,22 @@ class NewPol extends React.Component {
 
     }
 
+    // componentDidMount() {
+    //     this.setState({ map: 
+    //         <NaverMap
+    //             clientId='uu18yh1r2p'
+    //             ncp // 네이버 클라우드 플랫폼 사용여부
+    //             style={{margin:'0 auto',width:'100%', height:'900px'}}
+    //             initialPosition={this.state.mapCenterPoint}
+    //             initialZoom={16}
+    //             // onMapClick={(e) => {this.createPolygon(e)}}
+    //             jijuk={true}
+    //         >
+    //             {this.state.polygons}
+    //         </NaverMap>
+    //     });
+    // }
+
     render() {
         return (
             <div className="container mt-5">
@@ -164,13 +204,19 @@ class NewPol extends React.Component {
                         clientId='uu18yh1r2p'
                         ncp // 네이버 클라우드 플랫폼 사용여부
                         style={{margin:'0 auto',width:'100%', height:'900px'}}
-                        initialPosition={{lat:37.5063796431181, lng:127.06221589110937}}
+                        initialPosition={this.state.mapCenterPoint}
                         initialZoom={16}
                         // onMapClick={(e) => {this.createPolygon(e)}}
+                        onInit={(map, naver)=>{
+                            // console.log(map);
+                            // console.log(naver);
+                            this.setState({naverMap: map, naver: naver});
+                        }}
                         jijuk={true}
                     >
                         {this.state.polygons}
                     </NaverMap>
+                    {/* {this.state.map} */}
                 </div>
             </div>
         );
