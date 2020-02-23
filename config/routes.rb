@@ -1,5 +1,9 @@
 Rails.application.routes.draw do
   namespace :api do
+    post 'regions/find'
+  end
+  get 'regions/find'
+  namespace :api do
     namespace :v2 do
       post 'showpols/index'
     end
