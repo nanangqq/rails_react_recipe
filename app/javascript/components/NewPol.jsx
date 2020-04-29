@@ -10,6 +10,7 @@ class NewPol extends React.Component {
             name: "",
             table: "",
             markers:[],
+            polygon:[],
             paths:[[]]
         };
 
@@ -54,12 +55,24 @@ class NewPol extends React.Component {
             body: JSON.stringify(body)
         }).then(response => {
             if (response.ok) {
+                console.log('ok')
                 return response.json();
             }
             throw new Error("Network response was not ok.");
         }).then(response => {
             this.props.history.push(`/pol`);
             console.log(response);
+            this.setState({
+                pol: "",
+                name: "",
+                table: "",
+                markers:[],
+                paths:[[]],
+                polygon:[]
+            });
+            document.getElementById('pol').value = ''
+            document.getElementById('zoneName').value = ''
+            document.getElementById('tableName').value = ''
         }).catch(error => {
             console.log(error.message);
         });
@@ -84,7 +97,18 @@ class NewPol extends React.Component {
                     />
                 ]),
                 paths: newPaths,
-                pol: this.makeGeom(newPaths)
+                pol: this.makeGeom(newPaths),
+                polygon: [
+                    <Polygon 
+                        key={key}
+                        paths={newPaths} 
+                        fillColor={'#ff0000'}
+                        fillOpacity={0.6}
+                        strokeColor={'#ff0000'}
+                        strokeOpacity={0.6}
+                        strokeWeight={2}
+                    />
+                ]
             }
         );
         document.getElementById('pol').value = this.makeGeom(newPaths);
@@ -108,7 +132,18 @@ class NewPol extends React.Component {
                 tmpPolygon.push({lng:marker.props.lng, lat:marker.props.lat});
             }
         });
-        this.setState({markers: tmpMarkers, paths: [tmpPolygon], pol: this.makeGeom([tmpPolygon])});
+        this.setState({markers: tmpMarkers, paths: [tmpPolygon], pol: this.makeGeom([tmpPolygon]), polygon:[
+            <Polygon 
+                key={key}
+                paths={[tmpPolygon]} 
+                fillColor={'#ff0000'}
+                fillOpacity={0.6}
+                strokeColor={'#ff0000'}
+                strokeOpacity={0.6}
+                strokeWeight={2}
+            />
+
+        ]});
         document.getElementById('pol').value = this.makeGeom([tmpPolygon]);
 
     }
@@ -126,14 +161,15 @@ class NewPol extends React.Component {
                     jijuk={true}
                 >
                     {this.state.markers}
-                    <Polygon 
+                    {this.state.polygon}
+                    {/* <Polygon 
                         paths={this.state.paths} 
                         fillColor={'#ff0000'}
                         fillOpacity={0.6}
                         strokeColor={'#ff0000'}
                         strokeOpacity={0.6}
                         strokeWeight={2}
-                    />
+                    /> */}
                 </NaverMap>
 
               <div className="row">
